@@ -156,9 +156,10 @@ const commands = {
                     vid = await yt.getVideoByID(vidSearch[0].id);
                 } catch(error) {
                      msg.channel.send("Couldn't find `" + args + "`");
+                     return;
                 }
             }
-            queueVid(vid,msg,vc);
+            queueVid(vid, msg, vc);
         }
     },
 
@@ -185,13 +186,13 @@ const commands = {
     "volume": function(args, msg, serverQueue) {
         if (!serverQueue) {
             msg.channel.send("Nothing playing!");
-        } else if (!args[0]) {
+        } else if (args.length == 0) {
             msg.channel.send("Current volume: `" + serverQueue.volume + "`");
-        } else if (maxVol != null && args[1] > maxVol) {
+        } else if (maxVol != null && args[0] > maxVol) {
             msg.channel.send("Cannot increase volume past the limit of `" + maxVol + "`");
         } else {
-            serverQueue.volume = args[1];
-            serverQueue.connection.dispatcher.setVolumeLogarithmic(serverQueue.volume/100);
+            serverQueue.volume = args[0];
+            serverQueue.connection.dispatcher.setVolumeLogarithmic(serverQueue.volume / 100);
             msg.channel.send("Volume set to `" + serverQueue.volume + "`");
         }
     },
@@ -237,7 +238,7 @@ const commands = {
         if (!serverQueue || serverQueue.songs.length <= 1) {
             msg.channel.send("Nothing in queue!");
         } else {
-            var queueMsg = `${serverQueue.songs.length-1} song(s) in queue!\n`;
+            var queueMsg = `${serverQueue.songs.length - 1} song(s) in queue!\n`;
             for (let song of serverQueue.songs) {
                 queueMsg += "```" + song.title + " | " + song.duration + "```";
             }
@@ -253,7 +254,7 @@ const commands = {
     "setstatus": function(args, msg) {
         if (msg.author.id == config.owner) {
             const typestat = args[0];
-            const status = args.slice(2).join(" ");
+            const status = args.slice(1).join(" ");
             client.user.setActivity(status, typestat);
         }
     },
@@ -325,7 +326,7 @@ async function queueVid(vid, msg, vc, pl = false) {
         } catch(e) {
             console.error(e);
             queue.delete(msg.guild.id);
-            msg.channel.send(`Error joining voice channel: ${error}`);
+            msg.channel.send(`Error joining voice channel: ${e.message}`);
         }
     } else {
         serverQueue.songs.push(song);
@@ -376,7 +377,7 @@ function play(guild, song) {
         play(guild, serverQueue.songs[0]);
     })
     .on('error', error => console.error(error));
-    dispatcher.setVolumeLogarithmic(serverQueue.volume/100);
+    dispatcher.setVolumeLogarithmic(serverQueue.volume / 100);
 
     serverQueue.textChannel.send({embed: {
         color: 100500,
@@ -386,9 +387,7 @@ function play(guild, song) {
         },
         title: song.title,
         url: song.url,
-        thumbnail: {
-            url: song.thumbnail
-        },
+        thumbnail: { url: song.thumbnail },
         fields: [
             {
                 name: 'Duration',
