@@ -81,7 +81,7 @@ client.on("guildDelete", guild => {
 });
 
 const commands = {
-    "image": function(args, msg) {
+    "image": async function(args, msg) {
         if (args.length == 0) {
             return;
         }
@@ -101,18 +101,7 @@ const commands = {
         }});
     },
 
-    "log": function(args) {
-        if (args.length == 0) {
-            return;
-        }
-
-        var surl = args[0].replace(/<(.+)>/g, '$1');
-        const pl = await yt.getPlaylist(surl);
-        const vids = await pl.getVideos();
-        console.log(vids.length);
-    },
-
-    "play": function(args, msg) {
+    "play": async function(args, msg) {
         if (args.length == 0) {
             msg.channel.send('Enter a search term or YouTube link!');
             return;
