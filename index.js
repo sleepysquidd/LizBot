@@ -5,7 +5,7 @@ const ytl = require('simple-youtube-api');
 const GoogleImages = require('google-images');
 
 const client = new Discord.Client();
-const gClient = new GoogleImages('008145624407253320335:4pwvoicqqnc',config.cseapi);
+const gClient = new GoogleImages('apikey',config.cseapi);
 const queue = new Map();
 const prefix = config.prefix;
 const yt = new ytl(config.ytapi);
